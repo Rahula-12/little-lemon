@@ -8,19 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.OutlinedTextFieldDefaults.shape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,7 +44,9 @@ fun Onboarding(modifier: Modifier=Modifier) {
                         contentScale= ContentScale.FillWidth,
                         painter = painterResource(R.drawable.logo),
                         contentDescription = "logo",
-                        modifier=modifier.width(200.dp).height(100.dp)
+                        modifier= modifier
+                            .width(200.dp)
+                            .height(100.dp)
                     )
                 }
             }
@@ -64,12 +60,21 @@ fun Onboarding(modifier: Modifier=Modifier) {
             var email by remember {
                 mutableStateOf("")
             }
+            var registrationStatus by remember {
+                mutableStateOf("")
+            }
             Column(
-                modifier=modifier.fillMaxWidth().padding(paddingValues),
+                modifier= modifier
+                    .fillMaxWidth()
+                    .padding(paddingValues),
                 verticalArrangement = Arrangement.spacedBy(40.dp)
             ) {
-                Text(text = "Let's get to know you",modifier=modifier.fillMaxWidth().background(
-                    DarkGrey).padding(top=50.dp, bottom = 50.dp), textAlign = TextAlign.Center, color = Color.White, fontSize = TextUnit(30f,
+                Text(text = "Let's get to know you",modifier= modifier
+                    .fillMaxWidth()
+                    .background(
+                        DarkGrey
+                    )
+                    .padding(top = 50.dp, bottom = 50.dp), textAlign = TextAlign.Center, color = Color.White, fontSize = TextUnit(30f,
                     TextUnitType.Sp
                 )
                 )
@@ -84,13 +89,19 @@ fun Onboarding(modifier: Modifier=Modifier) {
                     email=it
                 }
                 Button(
-                    onClick = {},
-                    modifier=modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp),
+                    onClick = {
+                              if(firstName=="" || lastName=="" || email=="")    registrationStatus="Registration unsuccessful. Please enter all data."
+                              else registrationStatus="Registration successful!"
+                    },
+                    modifier= modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp, end = 10.dp),
                     shape = RoundedCornerShape(5.dp),
                     colors = ButtonColors(containerColor = DarkYellow,contentColor=Color.Black, disabledContentColor = Color.Black, disabledContainerColor = DarkYellow)
                 ) {
                     Text("Register")
                 }
+                Text(text = registrationStatus)
             }
         }
 }
@@ -98,7 +109,9 @@ fun Onboarding(modifier: Modifier=Modifier) {
 @Composable
 fun LabelsAndFields(label:String,fieldValue:String,onUpdateField:(String)->Unit={}) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(start = 10.dp, end = 10.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 10.dp, end = 10.dp),
         verticalArrangement = Arrangement.spacedBy(5.dp)
     ) {
         Text(label)
