@@ -31,12 +31,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.assignment.little_lemon.R
 import com.assignment.little_lemon.ui.theme.DarkGrey
 import com.assignment.little_lemon.ui.theme.DarkYellow
 
 @Composable
-fun Onboarding(modifier: Modifier=Modifier) {
+fun Onboarding(modifier: Modifier=Modifier,saveInSharedPref:(String,String,String)->Unit={_,_,_->},navController: NavController= rememberNavController()) {
         Scaffold(
             topBar = {
                 Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -67,7 +69,8 @@ fun Onboarding(modifier: Modifier=Modifier) {
                 modifier= modifier
                     .fillMaxWidth()
                     .padding(paddingValues),
-                verticalArrangement = Arrangement.spacedBy(40.dp)
+                verticalArrangement = Arrangement.spacedBy(40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = "Let's get to know you",modifier= modifier
                     .fillMaxWidth()
@@ -91,7 +94,11 @@ fun Onboarding(modifier: Modifier=Modifier) {
                 Button(
                     onClick = {
                               if(firstName=="" || lastName=="" || email=="")    registrationStatus="Registration unsuccessful. Please enter all data."
-                              else registrationStatus="Registration successful!"
+                              else {
+                                  saveInSharedPref(firstName,lastName,email)
+                                  navController.navigate(Destination.Home.route)
+                                  registrationStatus="Registration successful!"
+                              }
                     },
                     modifier= modifier
                         .fillMaxWidth()
