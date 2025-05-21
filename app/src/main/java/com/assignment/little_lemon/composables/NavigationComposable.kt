@@ -9,7 +9,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.assignment.little_lemon.MenuItem
+import com.assignment.little_lemon.MenuItem2
 
 sealed class Destination(val route:String) {
     data object Onboarding:Destination("Onboarding")
@@ -17,7 +17,7 @@ sealed class Destination(val route:String) {
     data object Profile:Destination("Profile")
 }
 @Composable
-fun Navigation(navController:NavHostController,menuItems:List<MenuItem>) {
+fun Navigation(navController:NavHostController,menuItems:List<MenuItem2>) {
     val userData=LocalContext.current.getSharedPreferences("UserData", Context.MODE_PRIVATE)
     val firstName=userData.getString("FirstName","")?:""
     val lastName=userData.getString("LastName","")?:""
@@ -29,7 +29,7 @@ fun Navigation(navController:NavHostController,menuItems:List<MenuItem>) {
             })
         }
         composable(Destination.Home.route){
-
+            Home(Modifier,menuItems)
         }
         composable(Destination.Profile.route){
             Profile(Modifier,firstName,lastName,email){

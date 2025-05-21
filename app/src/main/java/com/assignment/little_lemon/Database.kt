@@ -12,7 +12,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Entity
-data class MenuItem(
+data class MenuItem2(
     @PrimaryKey
     val id:Int,
     val title:String,
@@ -26,13 +26,16 @@ data class MenuItem(
 interface MenuDao {
 
     @Insert
-    suspend fun insertMenuItem(menuItem: MenuItem)
+    suspend fun insertMenuItem(menuItem: MenuItem2):Unit
 
-    @Query("Select * from MenuItem")
-    fun getItems(): LiveData<List<MenuItem>>
+    @Query("Select * from MenuItem2")
+    fun getItems(): LiveData<List<MenuItem2>>
+
+    @Query("Delete from menuitem2")
+    suspend fun deleteAll()
 }
 
-@Database(entities = [MenuItem::class], version = 1, exportSchema = false)
+@Database(entities = [MenuItem2::class], version = 1, exportSchema = false)
 abstract class MenuDatabase:RoomDatabase() {
 
     abstract fun getMenuDao():MenuDao
