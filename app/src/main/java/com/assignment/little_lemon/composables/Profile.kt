@@ -41,7 +41,7 @@ fun Profile(modifier: Modifier=Modifier,firstName:String="Rahul",lastName:String
                     contentDescription = "logo",
                     modifier= modifier
                         .width(200.dp)
-                        .height(100.dp)
+                        .height(100.dp).padding(top=50.dp)
                 )
             }
         }

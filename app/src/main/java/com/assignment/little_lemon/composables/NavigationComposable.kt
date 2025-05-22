@@ -1,11 +1,9 @@
 package com.assignment.little_lemon.composables
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,9 +17,9 @@ sealed class Destination(val route:String) {
 @Composable
 fun Navigation(navController:NavHostController,menuItems:List<MenuItem2>) {
     val userData=LocalContext.current.getSharedPreferences("UserData", Context.MODE_PRIVATE)
-    val firstName=userData.getString("FirstName","")?:""
-    val lastName=userData.getString("LastName","")?:""
-    val email=userData.getString("email","")?:""
+    var firstName=userData.getString("FirstName","")?:""
+    var lastName: String
+    var email: String
     NavHost(startDestination=if(firstName=="") Destination.Onboarding.route else Destination.Home.route, navController = navController) {
         composable(Destination.Onboarding.route){
             Onboarding(navController = navController, saveInSharedPref = {first,last,mail->
@@ -29,10 +27,14 @@ fun Navigation(navController:NavHostController,menuItems:List<MenuItem2>) {
             })
         }
         composable(Destination.Home.route){
-            Home(Modifier,menuItems)
+            Home(Modifier,menuItems,navController)
         }
         composable(Destination.Profile.route){
+            firstName=userData.getString("FirstName","")?:""
+             lastName=userData.getString("LastName","")?:""
+             email=userData.getString("email","")?:""
             Profile(Modifier,firstName,lastName,email){
+                userData.edit().putString("FirstName","").putString("LastName","").putString("email","").commit()
                 navController.navigate(Destination.Onboarding.route)
             }
         }
