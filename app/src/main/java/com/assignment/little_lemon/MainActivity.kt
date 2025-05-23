@@ -5,16 +5,17 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.assignment.little_lemon.composables.Navigation
 import com.assignment.little_lemon.ui.theme.LittlelemonTheme
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
@@ -35,36 +36,50 @@ class MainActivity : ComponentActivity() {
             }
         }
         enableEdgeToEdge()
+        val menuDao = MenuDatabase.getInstance(applicationContext).getMenuDao()
         lifecycleScope.launch {
-            val menuDao=MenuDatabase.getInstance(applicationContext).getMenuDao()
-            try{
-                menuDao.deleteAll()
-                val responseText=client.get("https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/menu.json").bodyAsText()
-                val menuNetwork=Json {
+            try {
+
+                val responseText =
+                    client.get("https://raw.githubusercontent.com/Meta-Mobile-Developer-PC/Working-With-Data-API/main/menu.json")
+                        .bodyAsText()
+                val menuNetwork = Json {
                     ignoreUnknownKeys = true
                     isLenient = true
                 }.decodeFromString<MenuNetwork>(responseText)
-                for(menu in menuNetwork.menuList) {
-                    Log.d("ids",menu.toMenuItem().id.toString())
+                menuDao.deleteAll()
+                for (menu in menuNetwork.menuList) {
+                    Log.d("ids", menu.toMenuItem().id.toString())
                     menuDao.insertMenuItem(menu.toMenuItem())
                 }
-            }
-            catch(e:Exception) {
-                Log.d("network error",e.message.toString())
-            }
-
-            menuDao.getItems().observe(this@MainActivity) {menuItemsList->
-                setContent {
-                    LittlelemonTheme {
-                        val navController= rememberNavController()
-                        Navigation(navController,menuItemsList)
-                    }
-                }
+            } catch (e: Exception) {
+                Log.d("network error", e.message.toString())
             }
         }
+
+
+        setContent {
+            LittlelemonTheme {
+                var menuItemList by remember {
+                    mutableStateOf(listOf<MenuItem2>())
+                }
+                LaunchedEffect(menuItemList.size) {
+                    menuDao.getItems().asFlow().collect{
+                        menuItemList=it
+                    }
+                }
+//                var temp by remember {
+//                    mutableStateOf(listOf<MenuItem2>())
+//                }
+//                temp = menuItemList.value
+                val navController = rememberNavController()
+                Navigation(navController, menuItemList)
+            }
+        }
+//        }
     }
 }
 
-fun Menu.toMenuItem():MenuItem2 {
-    return MenuItem2(id,title,description,price,image,category)
+fun Menu.toMenuItem(): MenuItem2 {
+    return MenuItem2(id, title, description, price, image, category)
 }

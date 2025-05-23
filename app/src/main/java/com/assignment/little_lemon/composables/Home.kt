@@ -63,7 +63,7 @@ fun Home(modifier: Modifier=Modifier,menuItems:List<MenuItem2>,navController: Na
     var searchPhase by remember {
         mutableStateOf("")
     }
-    val filteredList= remember {
+    val filteredList= remember(menuItems.size) {
         mutableStateOf(menuItems)
     }
     var selectedCategory by remember {
